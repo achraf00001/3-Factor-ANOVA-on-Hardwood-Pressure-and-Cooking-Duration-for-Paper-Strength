@@ -1,0 +1,1 @@
+# 3-Factor-ANOVA-on-Hardwood-Pressure-and-Cooking-Duration-for-Paper-Strength
