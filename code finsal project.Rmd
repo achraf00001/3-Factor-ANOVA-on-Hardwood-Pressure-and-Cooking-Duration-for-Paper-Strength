@@ -1,0 +1,196 @@
+---
+title: "Untitled"
+author: "Achraf chekaoui"
+date: "4/20/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+da <- data.frame(y=c(196.6,196,198.5,197.2,197.5,196.6,197.7,196,196,196.9,195.6,196.2,199.8,199.4,198.4,197.6,197.4,198.1,198.4,198.6,197.5,198.1,197.6,198.4,199.6,200.4,198.7,198,197,197.8,200.6,200.9,199.6,199,198.5,199.8),
+                pressure=as.factor(c(400,400,400,400,400,400,500,500,500,500,500,500,650,650,650,650,650,650,400,400,400,400,400,400,500,500,500,500,500,500,650,650,650,650,650,650)),
+                concentration=as.factor(c(2,2,4,4,8,8,2,2,4,4,8,8,2,2,4,4,8,8,2,2,4,4,8,8,2,2,4,4,8,8,2,2,4,4,8,8)),
+                 cookingtime=as.factor(c(3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4)))   
+
+
+anv <- aov(y ~ concentration + pressure +cookingtime + concentration*pressure + concentration*cookingtime +pressure*cookingtime + concentration*pressure*cookingtime , data = da)
+summary(anv)
+
+plot( anv , which = 2)
+plot(density(anv$residuals)) 
+plot(anv ,which = 1) 
+
+library(dplyr)
+anv1 <- aov(y ~ concentration + pressure +cookingtime + concentration*pressure, data = da)
+summary(anv1) 
+
+da %>% 
+  group_by(pressure)%>%
+  summarise( averege = mean(y))
+
+anova <- aov(y~pressure ,data = da)
+TukeyHSD(anova)  
+
+da %>% 
+  group_by(concentration)%>%
+  summarise( averege = mean(y))
+
+anova1 <- aov(y~concentration ,data = da)
+TukeyHSD(anova1)  
+
+da %>% 
+  group_by(cookingtime)%>%
+  summarise( averege = mean(y)) 
+
+anova2 <- aov(y~cookingtime ,data = da)
+TukeyHSD(anova2)
+
+plot( anv1 , which = 2)
+plot(density(anv1$residuals)) 
+plot(anv1 ,which = 1) 
+
+interaction.plot( x.factor = da$pressure, #x-axis variable
+                 trace.factor = da$concentration, #variable for lines
+                 response = da$y, #y-axis variable
+                 fun = mean, #metric to plot
+                 ylab = "paper strenght",
+                 xlab = "pressure",
+                 col = c("green", "blue", "red"),
+                 lty = 1, #line type
+                 lwd = 2, #line width
+                 trace.label = "concentration")  
+
+interaction.plot( x.factor = da$cookingtime, #x-axis variable
+                 trace.factor = da$concentration, #variable for lines
+                 response = da$y, #y-axis variable
+                 fun = mean, #metric to plot
+                 ylab = "paper strenght",
+                 xlab = "cooking time",
+                 col = c("green", "blue", "red"),
+                 lty = 1, #line type
+                 lwd = 2, #line width
+                 trace.label = "concentration")  
+
+interaction.plot( x.factor = da$pressure, #x-axis variable
+                 trace.factor = da$cookingtime, #variable for lines
+                 response = da$y, #y-axis variable
+                 fun = mean, #metric to plot
+                 ylab = "paper strenght",
+                 xlab = " pressure",
+                 col = c("green", "blue", "red"),
+                 lty = 1, #line type
+                 lwd = 2, #line width
+                 trace.label = "cooking time")   
+
+ 
+library(dae)
+library(ggplot2)
+
+interaction.ABC.plot(y, x.factor=concentration,
+                     groups.factor=cookingtime, trace.factor=pressure,data=da,
+                     title="####")
+
+```
+
+
+
+```{r}
+da3 <- data.frame(y=c(23,24,25,36,35,36,28,24,27,27,28,26,34,38,39,35,35,34,31,32,29,33,34,35,26,27,25,24,23,28,37,39,35,26,29,25,38,36,35,34,38,36,36,37,34,34,36,39,34,36,31,28,26,24),
+                operator=as.factor(c(1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3)),
+                cycle=as.factor(c(40,40,40,50,50,50,60,60,60,40,40,40,50,50,50,60,60,60,40,40,40,50,50,50,60,60,60,40,40,40,50,50,50,60,60,60,40,40,40,50,50,50,60,60,60,40,40,40,50,50,50,60,60,60)),
+                 temperature=as.factor(c(3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4)))   
+
+
+anv3 <- aov(y ~ operator+cycle+temperature+ operator*cycle + operator*temperature +operator*cycle*temperature , data = da3)
+summary(anv3)
+
+plot( anv3 , which = 2)
+plot(density(anv3$residuals)) 
+plot(anv3 ,which = 1) 
+
+
+
+
+```
+
+```{r}
+ExperimentDesign <- expand.grid(A = gl(2, 1, labels = c("-", "+")),
+                           B = gl(2, 1, labels = c("-", "+"))) 
+
+ 
+# Randomize the experiment
+ExperimentDesign$ord <- sample(1:4, 4)
+ExperimentDesign[order(ExperimentDesign$ord), ]
+
+# Create replicates
+ss.data.doe1 <- data.frame(repl = rep(1:4, each = 4),
+                           rbind(ExperimentDesign)) 
+
+ss.data.doe1$response <- c(18.2,27.2,15.9,41,18.9,24,14.5,43.9,12.9,22.4,15.1,36.3,14.4,22.5,14.2,39.9) 
+ss.data.doe1
+
+aggregate(response ~ A + B ,
+          FUN = mean, data = ss.data.doe1) 
+
+doe.model <- aov(response ~ A + B+
+                  A * B ,
+                data = ss.data.doe1)
+
+summary(doe.model) 
+
+
+plot( doe.model , which = 2)
+plot(density(doe.model$residuals)) 
+plot(doe.model ,which = 1) 
+```
+
+```{r}
+ExperimentDesign <- expand.grid(A = gl(2, 1, labels = c("-", "+")),
+                           B = gl(2, 1, labels = c("-", "+")),
+                           C = gl(2, 1, labels = c("-", "+")),
+                           D = gl(2,1 ,labels = c("-", "+")))
+ExperimentDesign
+
+
+# Randomize the experiment
+ExperimentDesign$ord <- sample(1:8,8 )
+ExperimentDesign[order(ExperimentDesign$ord), ]
+
+# Create replicates
+ss.data.doe1 <- data.frame(repl = rep(1:2, each = 16),
+                           rbind(ExperimentDesign))
+ss.data.doe1
+
+# Add responses
+ss.data.doe1$response <- c(90,74,81,83,77,81,88,73,
+                           98,72,87,85,99,79,87,80,
+                           93,78,85,80,78,80,82,70,
+                           95,76,83,86,90,75,84,80)
+ss.data.doe1
+
+# Get the average score for each experiment design
+aggregate(response ~ A + B + C + D,
+          FUN = mean, data = ss.data.doe1)
+
+doe.model <- aov(response ~ A + B + C + D+
+                  A * B + A*C+ B*C + A*D+B*D+C*D +
+                  A*B*C+A*B*D+A*C*D+B*C*D+A*B*C*D,
+                data = ss.data.doe1)
+summary(doe.model)
+
+doe.model <- aov(response ~ A + C + D+
+                  A * B + A*C+ B*C + A*D+B*D+C*D +
+                  A*B*C+A*B*D+A*C*D+B*C*D+A*B*C*D,
+                data = ss.data.doe1)
+summary(doe.model)
+
+
+plot( doe.model , which = 2)
+plot(density(doe.model$residuals)) 
+plot(doe.model ,which = 1) 
+```
+
